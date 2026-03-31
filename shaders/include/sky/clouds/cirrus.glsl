@@ -5,6 +5,21 @@
 
 #include "common.glsl"
 
+#ifdef PIXELATED_CIRRUS_CLOUDS
+vec2 VoxelateCirrusCloudCoord(vec2 traceCoord) {
+    float voxelStep = PIXELATED_CIRRUS_CLOUDS_SIZE * CLOUDS_SCALE;
+    return (floor(traceCoord / voxelStep) + 0.5) * voxelStep;
+}
+
+vec2 PixelateCirrusWorldCoord(vec2 worldCoord) {
+    const float wind_angle = CLOUDS_CIRRUS_WIND_ANGLE * degree;
+    const vec2 wind_velocity = CLOUDS_CIRRUS_WIND_SPEED * vec2(cos(wind_angle), sin(wind_angle));
+
+    vec2 offset = cameraPosition.xz * CLOUDS_SCALE + wind_velocity * world_age;
+    return VoxelateCirrusCloudCoord(worldCoord + offset) - offset;
+}
+#endif
+
 float clouds_cirrus_density(vec2 coord, float altitude_fraction) {
     const float wind_angle = CLOUDS_CIRRUS_WIND_ANGLE * degree;
     const vec2 wind_velocity =
@@ -12,6 +27,10 @@ float clouds_cirrus_density(vec2 coord, float altitude_fraction) {
 
     coord = coord + cameraPosition.xz * CLOUDS_SCALE;
     coord = coord + wind_velocity * world_age;
+
+#ifdef PIXELATED_CIRRUS_CLOUDS
+    coord = VoxelateCirrusCloudCoord(coord);
+#endif
 
     vec2 curl = curl2D(0.00002 * coord) * 0.5 + curl2D(0.00004 * coord) * 0.25 +
         curl2D(0.00008 * coord) * 0.125;
@@ -251,6 +270,10 @@ CloudsResult draw_cirrus_clouds(
 
     float distance_to_sphere = (r < clouds_cirrus_radius) ? dists.y : dists.x;
     vec3 sphere_pos = air_viewer_pos + ray_dir * distance_to_sphere;
+
+#ifdef PIXELATED_CIRRUS_CLOUDS
+    sphere_pos.xz = PixelateCirrusWorldCoord(sphere_pos.xz);
+#endif
 
     // ------------------
     //   Cloud Lighting

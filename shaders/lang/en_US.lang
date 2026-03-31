@@ -294,6 +294,8 @@ option.CLOUDS_CUMULUS_WIND_ANGLE            = Wind Angle
 suffix.CLOUDS_CUMULUS_ALTITUDE              = °
 option.CLOUDS_CUMULUS_PRECOMPUTE_LOCAL_COVERAGE         = Precompute Local Coverage
 option.CLOUDS_CUMULUS_PRECOMPUTE_LOCAL_COVERAGE.comment = Aggressive optimization for cumulus clouds. Reduces the maximum distance clouds can be drawn and can cause some artifacts with cloud shapes morphing when the camera moves. Disable for taking screenshots above the clouds
+option.PIXELATED_CUMULUS_CLOUDS             = Pixelation
+option.PIXELATED_CUMULUS_CLOUDS_SIZE        = Pixelation Size
 
 option.CLOUDS_ALTOCUMULUS                       = Altocumulus Clouds
 option.CLOUDS_ALTOCUMULUS.comment               = Mid-altitude volumetric clouds made to resemble altocumulus clouds
@@ -312,6 +314,8 @@ option.CLOUDS_ALTOCUMULUS_WIND_SPEED            = Wind Speed
 suffix.CLOUDS_ALTOCUMULUS_ALTITUDE              = m/s
 option.CLOUDS_ALTOCUMULUS_WIND_ANGLE            = Wind Angle
 suffix.CLOUDS_ALTOCUMULUS_ALTITUDE              = °
+option.PIXELATED_ALTOCUMULUS_CLOUDS             = Pixelation
+option.PIXELATED_ALTOCUMULUS_CLOUDS_SIZE        = Pixelation Size
 
 option.CLOUDS_CUMULUS_CONGESTUS                       = Cumulus Congestus Clouds
 option.CLOUDS_CUMULUS_CONGESTUS.comment               = Massive, distant volumetric clouds
@@ -330,6 +334,8 @@ option.CLOUDS_CUMULUS_CONGESTUS_WIND_SPEED            = Wind Speed
 suffix.CLOUDS_CUMULUS_CONGESTUS_ALTITUDE              = m/s
 option.CLOUDS_CUMULUS_CONGESTUS_WIND_ANGLE            = Wind Angle
 suffix.CLOUDS_CUMULUS_CONGESTUS_ALTITUDE              = °
+option.PIXELATED_CUMULUS_CONGESTUS_CLOUDS             = Pixelation
+option.PIXELATED_CUMULUS_CONGESTUS_CLOUDS_SIZE        = Pixelation Size
 
 option.CLOUDS_NOCTILUCENT              = Noctilucent Clouds
 
@@ -379,9 +385,13 @@ option.CLOUDS_CIRROCUMULUS_COVERAGE        = Cirrocumulus Coverage
 option.CLOUDS_CIRROCUMULUS_SIZE            = Cirrocumulus Size
 option.CLOUDS_CIRROCUMULUS_DETAIL_STRENGTH = Cirrocumulus Detail Strength
 option.CLOUDS_CIRROCUMULUS_CURL_STRENGTH   = Cirrocumulus Curl Strength
+option.PIXELATED_CIRRUS_CLOUDS             = Pixelation
+option.PIXELATED_CIRRUS_CLOUDS_SIZE        = Pixelation Size
 
 option.CLOUDS_NOCTILUCENT_INTENSITY    = Intensity
 option.CLOUDS_NOCTILUCENT_RARITY       = Rarity
+option.PIXELATED_NOCTILUCENT_CLOUDS    = Pixelation
+option.PIXELATED_NOCTILUCENT_CLOUDS_SIZE = Pixelation Size
 
 option.AURORA_NORMAL                   = Aurora in Any Biome
 option.AURORA_SNOW                     = Aurora in Snow Biome

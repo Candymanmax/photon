@@ -6,6 +6,13 @@
 #include "common.glsl"
 #include "coverage_map.glsl"
 
+#ifdef PIXELATED_CUMULUS_CLOUDS
+vec3 VoxelateCumulusCloudPos(vec3 tracePos) {
+    float voxelStep = PIXELATED_CUMULUS_CLOUDS_SIZE * CLOUDS_SCALE;
+    return (floor(tracePos / voxelStep) + 0.5) * voxelStep;
+}
+#endif
+
 // altitude_fraction := 0 at the bottom of the cloud layer and 1 at the top
 float clouds_cumulus_altitude_shaping(float density, float altitude_fraction) {
     // Stratus shapes
@@ -34,6 +41,9 @@ float clouds_cumulus_altitude_shaping(float density, float altitude_fraction) {
 }
 
 float clouds_cumulus_density(vec3 pos) {
+#ifdef PIXELATED_CUMULUS_CLOUDS
+    pos = VoxelateCumulusCloudPos(pos);
+#endif
     float r = length(pos);
 
 #if defined CLOUDS_USE_LOCAL_COVERAGE_MAP
@@ -277,6 +287,10 @@ CloudsResult draw_cumulus_clouds(
         }
 
         vec3 ray_pos = ray_origin + ray_step * i;
+
+    #ifdef PIXELATED_CUMULUS_CLOUDS
+        ray_pos = VoxelateCumulusCloudPos(ray_pos);
+    #endif
 
         float altitude_fraction = (length(ray_pos) - clouds_cumulus_radius) *
             rcp(clouds_cumulus_thickness);

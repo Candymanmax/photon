@@ -5,6 +5,13 @@
 
 #include "common.glsl"
 
+#ifdef PIXELATED_ALTOCUMULUS_CLOUDS
+vec3 VoxelateAltocumulusCloudPos(vec3 tracePos) {
+    float voxelStep = PIXELATED_ALTOCUMULUS_CLOUDS_SIZE * CLOUDS_SCALE;
+    return (floor(tracePos / voxelStep) + 0.5) * voxelStep;
+}
+#endif
+
 // altitude_fraction := 0 at the bottom of the cloud layer and 1 at the top
 float clouds_altocumulus_altitude_shaping(
     float density,
@@ -20,6 +27,10 @@ float clouds_altocumulus_altitude_shaping(
 }
 
 float clouds_altocumulus_density(vec3 pos) {
+#ifdef PIXELATED_ALTOCUMULUS_CLOUDS
+    pos = VoxelateAltocumulusCloudPos(pos);
+#endif
+
     const float wind_angle = CLOUDS_ALTOCUMULUS_WIND_ANGLE * degree;
     const vec2 wind_velocity =
         CLOUDS_ALTOCUMULUS_WIND_SPEED * vec2(cos(wind_angle), sin(wind_angle));
@@ -286,6 +297,10 @@ CloudsResult draw_altocumulus_clouds(
         }
 
         vec3 ray_pos = ray_origin + ray_step * i;
+
+    #ifdef PIXELATED_ALTOCUMULUS_CLOUDS
+        ray_pos = VoxelateAltocumulusCloudPos(ray_pos);
+    #endif
 
         float altitude_fraction =
             (length(ray_pos) - clouds_altocumulus_radius) *

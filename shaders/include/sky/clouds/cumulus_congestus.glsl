@@ -5,6 +5,13 @@
 
 #include "common.glsl"
 
+#ifdef PIXELATED_CUMULUS_CONGESTUS_CLOUDS
+vec3 VoxelateCumulusCongestusCloudPos(vec3 tracePos) {
+    float voxelStep = PIXELATED_CUMULUS_CONGESTUS_CLOUDS_SIZE * CLOUDS_SCALE;
+    return (floor(tracePos / voxelStep) + 0.5) * voxelStep;
+}
+#endif
+
 const float clouds_cumulus_congestus_radius =
     planet_radius + CLOUDS_CUMULUS_CONGESTUS_ALTITUDE;
 const float clouds_cumulus_congestus_thickness =
@@ -34,6 +41,10 @@ float clouds_cumulus_congestus_altitude_shaping(
 }
 
 float clouds_cumulus_congestus_density(vec3 pos) {
+#ifdef PIXELATED_CUMULUS_CONGESTUS_CLOUDS
+    pos = VoxelateCumulusCongestusCloudPos(pos);
+#endif
+
     const float wind_angle = CLOUDS_CUMULUS_WIND_ANGLE * degree;
     const vec2 wind_velocity =
         CLOUDS_CUMULUS_WIND_SPEED * vec2(cos(wind_angle), sin(wind_angle));
@@ -278,6 +289,10 @@ CloudsResult draw_cumulus_congestus_clouds(
         }
 
         vec3 ray_pos = ray_origin + ray_step * i;
+
+    #ifdef PIXELATED_CUMULUS_CONGESTUS_CLOUDS
+        ray_pos = VoxelateCumulusCongestusCloudPos(ray_pos);
+    #endif
 
         float altitude_fraction =
             (length(ray_pos) - clouds_cumulus_congestus_radius) *
