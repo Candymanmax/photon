@@ -28,7 +28,7 @@ float clouds_cirrus_density(vec2 coord, float altitude_fraction) {
     coord = coord + cameraPosition.xz * CLOUDS_SCALE;
     coord = coord + wind_velocity * world_age;
 
-#ifdef PIXELATED_CIRRUS_CLOUDS
+#if defined(PIXELATED_CIRRUS_CLOUDS) && !defined(PROGRAM_PREPARE)
     coord = VoxelateCirrusCloudCoord(coord);
 #endif
 

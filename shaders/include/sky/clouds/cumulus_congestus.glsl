@@ -48,7 +48,7 @@ float clouds_cumulus_congestus_altitude_shaping(
 }
 
 float clouds_cumulus_congestus_density(vec3 pos) {
-#ifdef PIXELATED_CUMULUS_CONGESTUS_CLOUDS
+#if defined(PIXELATED_CUMULUS_CONGESTUS_CLOUDS) && !defined(PROGRAM_PREPARE)
     pos = PixelateCumulusCongestusWorldPos(pos);
 #endif
 

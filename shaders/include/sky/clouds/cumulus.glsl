@@ -49,7 +49,7 @@ float clouds_cumulus_altitude_shaping(float density, float altitude_fraction) {
 }
 
 float clouds_cumulus_density(vec3 pos) {
-#ifdef PIXELATED_CUMULUS_CLOUDS
+#if defined(PIXELATED_CUMULUS_CLOUDS) && !defined(PROGRAM_PREPARE)
     pos = PixelateCumulusWorldPos(pos);
 #endif
     float r = length(pos);

@@ -34,7 +34,7 @@ float clouds_altocumulus_altitude_shaping(
 }
 
 float clouds_altocumulus_density(vec3 pos) {
-#ifdef PIXELATED_ALTOCUMULUS_CLOUDS
+#if defined(PIXELATED_ALTOCUMULUS_CLOUDS) && !defined(PROGRAM_PREPARE)
     pos = PixelateAltocumulusWorldPos(pos);
 #endif
 
