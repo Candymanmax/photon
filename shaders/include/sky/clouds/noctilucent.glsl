@@ -7,17 +7,18 @@
 
 #ifdef PIXELATED_NOCTILUCENT_CLOUDS
 vec2 VoxelateNoctilucentCloudCoord(vec2 traceCoord) {
-    float voxelStep = 0.25 * PIXELATED_NOCTILUCENT_CLOUDS_SIZE * CLOUDS_SCALE;
+    float voxelStep = PIXELATED_NOCTILUCENT_CLOUDS_SIZE * CLOUDS_SCALE;
     return (floor(traceCoord / voxelStep) + 0.5) * voxelStep;
 }
 
 vec2 PixelateNoctilucentWorldCoord(vec2 worldCoord) {
-    return 4.0 * VoxelateNoctilucentCloudCoord(0.25 * worldCoord);
+    vec2 offset = cameraPosition.xz * CLOUDS_SCALE;
+    return 4.0 * VoxelateNoctilucentCloudCoord(0.25 * (worldCoord + offset)) - offset;
 }
 #endif
 
 float clouds_noctilucent_density(vec2 coord, vec3 ray_dir) {
-    coord *= 0.25;
+    coord = 0.25 * (coord + cameraPosition.xz * CLOUDS_SCALE);
 
 #ifdef PIXELATED_NOCTILUCENT_CLOUDS
     coord = VoxelateNoctilucentCloudCoord(coord);

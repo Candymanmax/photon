@@ -10,6 +10,13 @@ vec3 VoxelateCumulusCongestusCloudPos(vec3 tracePos) {
     float voxelStep = PIXELATED_CUMULUS_CONGESTUS_CLOUDS_SIZE * CLOUDS_SCALE;
     return (floor(tracePos / voxelStep) + 0.5) * voxelStep;
 }
+
+vec3 PixelateCumulusCongestusWorldPos(vec3 worldPos) {
+    const float wind_angle = CLOUDS_CUMULUS_WIND_ANGLE * degree;
+    const vec2 wind_velocity = CLOUDS_CUMULUS_WIND_SPEED * vec2(cos(wind_angle), sin(wind_angle));
+    vec3 offset = vec3(cameraPosition.xz * CLOUDS_SCALE + wind_velocity * world_age, 0.0).xzy;
+    return VoxelateCumulusCongestusCloudPos(worldPos + offset) - offset;
+}
 #endif
 
 const float clouds_cumulus_congestus_radius =
@@ -42,7 +49,7 @@ float clouds_cumulus_congestus_altitude_shaping(
 
 float clouds_cumulus_congestus_density(vec3 pos) {
 #ifdef PIXELATED_CUMULUS_CONGESTUS_CLOUDS
-    pos = VoxelateCumulusCongestusCloudPos(pos);
+    pos = PixelateCumulusCongestusWorldPos(pos);
 #endif
 
     const float wind_angle = CLOUDS_CUMULUS_WIND_ANGLE * degree;
@@ -289,10 +296,6 @@ CloudsResult draw_cumulus_congestus_clouds(
         }
 
         vec3 ray_pos = ray_origin + ray_step * i;
-
-    #ifdef PIXELATED_CUMULUS_CONGESTUS_CLOUDS
-        ray_pos = VoxelateCumulusCongestusCloudPos(ray_pos);
-    #endif
 
         float altitude_fraction =
             (length(ray_pos) - clouds_cumulus_congestus_radius) *
