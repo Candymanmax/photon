@@ -200,11 +200,14 @@ vec3 get_filtered_shadows(
 
     vec3 bias = get_shadow_bias(scene_pos, flat_normal, NoL, skylight);
 
+    vec3 edge_factor = vec3(0.0);
+#ifndef SHADOW_COLOR
     // Light leaking prevention from Complementary Reimagined, used with
     // permission
-    vec3 edge_factor
+    edge_factor
         = 0.1 - 0.2 * fract(scene_pos + cameraPosition + flat_normal * 0.01);
     edge_factor -= edge_factor * skylight;
+#endif
 
 #ifdef PIXELATED_SHADOWS
     // Snap position to the nearest block texel
