@@ -79,6 +79,7 @@ float get_puddle_noise(
     vec3 world_pos,
     vec3 flat_normal,
     vec2 light_levels
+) {
     const float puddle_frequency = 0.025;
 
     float puddle = texture(noisetex, world_pos.xz * puddle_frequency).w;
