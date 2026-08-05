@@ -34,6 +34,7 @@ OverworldFogParameters fog_params;
 #include "/include/misc/lod_mod_support.glsl"
 #include "/include/misc/material_masks.glsl"
 #include "/include/surface/material.glsl"
+#include "/include/surface/water_material.glsl"
 #include "/include/surface/water_normal.glsl"
 #include "/include/utility/color.glsl"
 #include "/include/utility/encoding.glsl"
@@ -71,58 +72,15 @@ Material get_water_material(
     float layer_dist,
     out float alpha
 ) {
-    Material material = water_material;
-    alpha = 0.01;
-
-    // Water texture
-
-#if WATER_TEXTURE == WATER_TEXTURE_HIGHLIGHT \
-    || WATER_TEXTURE == WATER_TEXTURE_HIGHLIGHT_UNDERGROUND
-    float texture_highlight = dampen(
-        0.5 * sqr(linear_step(0.63, 1.0, sampled_color.r))
-        + 0.03 * sampled_color.r
+    return get_water_material_from_sample(
+        sampled_color,
+        tint,
+        dir_world,
+        normal,
+        light_levels,
+        layer_dist,
+        alpha
     );
-#if WATER_TEXTURE == WATER_TEXTURE_HIGHLIGHT_UNDERGROUND
-    texture_highlight *= 1.0 - cube(linear_step(0.0, 0.5, light_levels.y));
-#endif
-
-    sampled_color *= tint;
-    material.albedo
-        = clamp01(0.5 * exp(-2.0 * water_absorption_coeff) * texture_highlight);
-    material.roughness += 0.3 * texture_highlight;
-    alpha += texture_highlight;
-#elif WATER_TEXTURE == WATER_TEXTURE_VANILLA
-    sampled_color *= tint;
-    material.albedo = srgb_eotf_inv(sampled_color.rgb * sampled_color.a)
-        * rec709_to_working_color;
-    alpha = sampled_color.a;
-#endif
-
-    // Water edge highlight
-
-#ifdef WATER_EDGE_HIGHLIGHT
-    float dist = layer_dist * max(abs(dir_world.y), eps);
-
-#if WATER_TEXTURE == WATER_TEXTURE_HIGHLIGHT \
-    || WATER_TEXTURE == WATER_TEXTURE_HIGHLIGHT_UNDERGROUND
-    float edge_highlight
-        = cube(max0(1.0 - 2.0 * dist)) * (1.0 + 8.0 * texture_highlight);
-#else
-    float edge_highlight = cube(max0(1.0 - 2.0 * dist));
-#endif
-    edge_highlight *= WATER_EDGE_HIGHLIGHT_INTENSITY * max0(normal.y)
-        * (1.0 - 0.5 * sqr(light_levels.y));
-    ;
-
-    material.albedo += 0.1 * edge_highlight
-        / mix(1.0,
-              max(dot(ambient_color, luminance_weights_rec2020), 0.5),
-              light_levels.y);
-    material.albedo = clamp01(material.albedo);
-    alpha += edge_highlight;
-#endif
-
-    return material;
 }
 
 void voxy_emitFragment(VoxyFragmentParameters parameters) {
