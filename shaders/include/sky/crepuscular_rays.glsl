@@ -133,9 +133,11 @@ vec4 draw_crepuscular_rays(
                        // but it looks nice)
         + 0.5 * henyey_greenstein_phase(LoV, -0.2); // backwards lobe
 
+    float rain_factor = (rainStrength * 1.2) + 1.0;
+
     scattering *= scattering_coeff * step_transmitted_fraction * light_color
         * step_length * clouds_params.crepuscular_rays_amount;
-    scattering *= (6.0 * CREPUSCULAR_RAYS_INTENSITY) * phase;
+    scattering *= (6.0 * CREPUSCULAR_RAYS_INTENSITY) * phase * rain_factor;
     transmittance
         = mix(vec3(1.0), transmittance, clouds_params.crepuscular_rays_amount);
 

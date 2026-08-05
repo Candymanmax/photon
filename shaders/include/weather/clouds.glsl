@@ -7,7 +7,7 @@
 
 float clouds_cumulus_congestus_blend(Weather weather, vec2 l0_coverage) {
     float temperature_weight = linear_step(0.5, 1.0, weather.temperature);
-    float humidity_weight = linear_step(0.3, 0.9, weather.humidity);
+    float humidity_weight = linear_step(0.3, 0.9, clamp01(weather.humidity));
     float wind_weight = sqr(weather.wind);
     float l0_high_coverage
         = linear_step(0.45, 0.5, dot(l0_coverage, vec2(0.66, 0.33)));
@@ -32,7 +32,7 @@ vec2 clouds_l0_coverage(Weather weather, float cumulus_congestus_blend) {
     float temperature_weight
         = 1.0 - 0.15 * linear_step(0.6, 1.0, weather.temperature);
     float humidity_weight
-        = 0.4 * weather.humidity + 0.5 * sqr(weather.humidity);
+        = 0.4 * weather.humidity + 0.5 * sqr(weather.humidity * 0.7);
     float stratus_sheet = sqr(clouds_l0_cumulus_stratus_blend(weather));
     vec2 local_variation = vec2(-0.1, 1.0) * (0.1 + 0.1 * weather.wind);
 
