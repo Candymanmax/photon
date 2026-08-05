@@ -159,6 +159,9 @@ vec3 get_lpv_fog_scattering(
 
         inscattered_light += light * visible_scattering * coefficients[0];
         transmittance *= step_transmittance;
+        if (max_of(transmittance) < 0.001) {
+            break;
+        }
 
         ray_position_world += ray_direction_world * step_length;
         step_length *= step_ratio;

@@ -142,6 +142,9 @@ mat2x3 raymarch_water_fog(
         }
 
         transmittance *= step_transmittance;
+        if (max_of(transmittance) < 0.001) {
+            break;
+        }
     }
 
     scattering
