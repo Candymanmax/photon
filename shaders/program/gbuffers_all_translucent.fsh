@@ -431,7 +431,6 @@ void main() {
 #ifdef WATER_PARALLAX
             vec3 direction_tangent = direction_world * tbn_fixed;
             coord = get_water_parallax_coord(
-                world_pos,
                 direction_tangent,
                 coord,
                 flow_dir,
