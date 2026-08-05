@@ -376,6 +376,15 @@ void main() {
     float pixel_age = max0(history_data.y) * float(!disocclusion);
     float history_weight = 1.0 - rcp(max(pixel_age - checkerboard_area, 1.0));
 
+    float radiance_change = length(current.rgb - history.rgb)
+        / max(max(max_of(current.rgb), max_of(history.rgb)), eps);
+    float coverage_change = abs(current.a - history.a);
+    float cloud_response = max(
+        smoothstep(0.1, 0.4, radiance_change),
+        smoothstep(0.05, 0.2, coverage_change)
+    );
+    history_weight *= 1.0 - 0.75 * max(velocity_factor, cloud_response);
+
 #ifndef TAAU
     // Offcenter rejection
     vec2 pixel_center_offset
