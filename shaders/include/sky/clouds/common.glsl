@@ -84,6 +84,48 @@ float clouds_powder_effect(float density, float cos_theta) {
     return powder;
 }
 
+#ifdef CLOUDS_IRIDESCENCE
+float clouds_iridescence_cie_x(float wavelength) {
+    float t1 = (wavelength - 442.0)
+        * (wavelength < 442.0 ? 0.0624 : 0.0374);
+    float t2 = (wavelength - 599.8)
+        * (wavelength < 599.8 ? 0.0264 : 0.0323);
+    float t3 = (wavelength - 501.1)
+        * (wavelength < 501.1 ? 0.0490 : 0.0382);
+
+    return 0.362 * exp(-0.5 * sqr(t1))
+        + 1.056 * exp(-0.5 * sqr(t2))
+        - 0.065 * exp(-0.5 * sqr(t3));
+}
+
+float clouds_iridescence_cie_y(float wavelength) {
+    float t1 = (wavelength - 568.8)
+        * (wavelength < 568.8 ? 0.0213 : 0.0247);
+    float t2 = (wavelength - 530.9)
+        * (wavelength < 530.9 ? 0.0613 : 0.0322);
+
+    return 0.821 * exp(-0.5 * sqr(t1))
+        + 0.286 * exp(-0.5 * sqr(t2));
+}
+
+float clouds_iridescence_cie_z(float wavelength) {
+    float t1 = (wavelength - 437.0)
+        * (wavelength < 437.0 ? 0.0845 : 0.0278);
+    float t2 = (wavelength - 459.0)
+        * (wavelength < 459.0 ? 0.0385 : 0.0725);
+
+    return 1.217 * exp(-0.5 * sqr(t1))
+        + 0.681 * exp(-0.5 * sqr(t2));
+}
+
+float clouds_iridescence_solar(float wavelength) {
+    float exponent = 14387700.0 / (wavelength * 5778.0);
+
+    return pow(550.0 / wavelength, 5.0)
+        * 91.5199 / (exp(exponent) - 1.0);
+}
+#endif
+
 vec3 clouds_aerial_perspective(
     vec3 clouds_scattering,
     float clouds_transmittance,
@@ -92,6 +134,58 @@ vec3 clouds_aerial_perspective(
     vec3 ray_dir,
     vec3 clear_sky
 ) {
+#ifdef CLOUDS_IRIDESCENCE
+    float sun_alignment = dot(ray_dir, sun_dir);
+    float sun_angle = fast_acos(clamp(sun_alignment, -1.0, 1.0));
+    float sun_fade = day_factor
+        * smoothstep(2.0 * degree, 5.0 * degree, sun_angle)
+        * exp(-0.5 * sqr((sun_angle - 11.0 * degree) / (8.0 * degree)))
+        * (1.0 - smoothstep(24.0 * degree, 31.0 * degree, sun_angle));
+    float cloud_opacity = 1.0 - clamp01(clouds_transmittance);
+    float thin_cloud_fade
+        = smoothstep(0.02, 0.12, cloud_opacity)
+        * (1.0 - smoothstep(0.55, 0.95, cloud_opacity));
+    const float iridescence_droplet_diameter = 4.0;
+    const float iridescence_size_variation = 0.08;
+    vec3 iridescence_xyz = vec3(0.0);
+    vec3 iridescence_base_xyz = vec3(0.0);
+
+    for (int i = 0; i < 9; ++i) {
+        float wavelength = 400.0 + 40.0 * float(i);
+        float solar = clouds_iridescence_solar(wavelength);
+        vec3 cie = vec3(
+            clouds_iridescence_cie_x(wavelength),
+            clouds_iridescence_cie_y(wavelength),
+            clouds_iridescence_cie_z(wavelength)
+        );
+        float phase = tau * iridescence_droplet_diameter
+            * sin(sun_angle) / (wavelength * 0.001);
+        float coherence = exp(-0.5 * sqr(phase * iridescence_size_variation));
+        float interference = 1.0 + 0.75 * coherence * cos(phase);
+
+        iridescence_xyz += cie * solar * interference;
+        iridescence_base_xyz += cie * solar;
+    }
+
+    vec3 iridescence_color = max0(
+        iridescence_xyz * xyz_to_rec2020
+        / max(iridescence_base_xyz * xyz_to_rec2020, vec3(eps))
+    );
+    iridescence_color *= rcp(
+        max(dot(iridescence_color, luminance_weights), eps)
+    );
+    iridescence_color = clamp(iridescence_color, 0.25, 1.75);
+    float iridescence_strength
+        = 0.14 * CLOUDS_IRIDESCENCE_STRENGTH * sun_fade
+        * thin_cloud_fade;
+
+    clouds_scattering = mix(
+        clouds_scattering,
+        clouds_scattering * iridescence_color,
+        clamp01(iridescence_strength)
+    );
+#endif
+
     vec3 air_transmittance;
 
 #if CLOUDS_AERIAL_PERSPECTIVE_BOOST != 0
