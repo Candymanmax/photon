@@ -569,6 +569,9 @@ void main() {
         shadow_distance_fade,
         sss_depth
     );
+    float end_flash_shadow_fade = get_end_flash_shadow_fade();
+    shadows = mix(vec3(1.0), shadows, end_flash_shadow_fade);
+    sss_depth *= end_flash_shadow_fade;
 #else
 #define sss_depth 0.0
 #define shadow_distance_fade 0.0

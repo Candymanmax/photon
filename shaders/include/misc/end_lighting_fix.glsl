@@ -1,6 +1,8 @@
 #if !defined INCLUDE_MISC_END_LIGHTING_FIX
 #define INCLUDE_MISC_END_LIGHTING_FIX
 
+#include "/include/misc/end_flash.glsl"
+
 // On OptiFine, sunPosition is provided in world space in the End dimension,
 // when it is normally in view space Since I convert sunPosition to world space
 // in shaders.properties, I must undo this conversion in the End dimension on OF

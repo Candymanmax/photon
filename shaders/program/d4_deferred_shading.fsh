@@ -543,6 +543,14 @@ void main() {
                 clamp01(shadow_distance_fade)
             );
 
+            float end_flash_shadow_fade = get_end_flash_shadow_fade();
+            shadows = mix(
+                vec3(1.0),
+                shadows,
+                end_flash_shadow_fade
+            );
+            sss_depth *= end_flash_shadow_fade;
+
             // Apply parallax shadow
 #if defined POM && defined POM_SHADOW \
     && (defined SPECULAR_MAPPING || defined NORMAL_MAPPING)

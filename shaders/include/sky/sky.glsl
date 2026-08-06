@@ -303,11 +303,6 @@ vec3 draw_sky(vec3 ray_dir) { return ambient_color; }
 const float sun_solid_angle = cone_angle_to_solid_angle(sun_angular_radius);
 const vec3 end_sun_color = vec3(1.0, 0.5, 0.25);
 
-#ifdef IS_IRIS
-uniform vec3 endFlashPosition;
-uniform float endFlashIntensity;
-#endif
-
 vec3 get_end_flash_direction() {
     vec3 direction = sun_dir;
 
@@ -321,16 +316,6 @@ vec3 get_end_flash_direction() {
 #endif
 
     return direction;
-}
-
-float get_end_flash_fade() {
-#ifdef IS_IRIS
-    if (length(endFlashPosition) > eps) {
-        return smoothstep(0.1, 0.35, endFlashIntensity);
-    }
-#endif
-
-    return 0.0;
 }
 
 vec3 draw_sun(vec3 ray_dir, vec3 sun_direction) {

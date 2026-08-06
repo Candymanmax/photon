@@ -1,6 +1,7 @@
 #if !defined INCLUDE_FOG_WATER_FOG_VL
 #define INCLUDE_FOG_WATER_FOG_VL
 
+#include "/include/misc/end_flash.glsl"
 #include "/include/lighting/shadows/distortion.glsl"
 #include "/include/utility/color.glsl"
 #include "/include/utility/fast_math.glsl"
@@ -86,10 +87,14 @@ mat2x3 raymarch_water_fog(
         );
         float depth0 = texelFetch(shadowtex0, shadow_texel, 0).x;
         float depth1 = texelFetch(shadowtex1, shadow_texel, 0).x;
-        float shadow = step(
-            float(clamp01(shadow_screen_pos) == shadow_screen_pos)
-                * shadow_screen_pos.z,
-            depth1
+        float shadow = mix(
+            1.0,
+            step(
+                float(clamp01(shadow_screen_pos) == shadow_screen_pos)
+                    * shadow_screen_pos.z,
+                depth1
+            ),
+            get_end_flash_shadow_fade()
         );
 
         // Calculate sunlight transmittance through the volume
