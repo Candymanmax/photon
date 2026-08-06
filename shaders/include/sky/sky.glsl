@@ -303,8 +303,38 @@ vec3 draw_sky(vec3 ray_dir) { return ambient_color; }
 const float sun_solid_angle = cone_angle_to_solid_angle(sun_angular_radius);
 const vec3 end_sun_color = vec3(1.0, 0.5, 0.25);
 
-vec3 draw_sun(vec3 ray_dir) {
-    float nu = dot(ray_dir, sun_dir);
+#ifdef IS_IRIS
+uniform vec3 endFlashPosition;
+uniform float endFlashIntensity;
+#endif
+
+vec3 get_end_flash_direction() {
+    vec3 direction = sun_dir;
+
+#ifdef IS_IRIS
+    float end_flash_position_length = length(endFlashPosition);
+
+    if (end_flash_position_length > eps) {
+        direction = mat3(gbufferModelViewInverse)
+            * (endFlashPosition / end_flash_position_length);
+    }
+#endif
+
+    return direction;
+}
+
+float get_end_flash_fade() {
+#ifdef IS_IRIS
+    if (length(endFlashPosition) > eps) {
+        return smoothstep(0.1, 0.35, endFlashIntensity);
+    }
+#endif
+
+    return 0.0;
+}
+
+vec3 draw_sun(vec3 ray_dir, vec3 sun_direction) {
+    float nu = dot(ray_dir, sun_direction);
     float r = fast_acos(nu);
 
     // Sun disk
@@ -318,14 +348,14 @@ vec3 draw_sun(vec3 ray_dir) {
     // Solar flare effect
 
     // Transform the coordinate space such that z is parallel to sun_dir
-    vec3 tangent = sun_dir.y == 1.0
+    vec3 tangent = sun_direction.y == 1.0
         ? vec3(1.0, 0.0, 0.0)
-        : normalize(cross(vec3(0.0, 1.0, 0.0), sun_dir));
-    vec3 bitangent = normalize(cross(tangent, sun_dir));
-    mat3 rot = mat3(tangent, bitangent, sun_dir);
+        : normalize(cross(vec3(0.0, 1.0, 0.0), sun_direction));
+    vec3 bitangent = normalize(cross(tangent, sun_direction));
+    mat3 rot = mat3(tangent, bitangent, sun_direction);
 
     // Vector from ray dir to sun dir
-    vec2 q = ((ray_dir - sun_dir) * rot).xy;
+    vec2 q = ((ray_dir - sun_direction) * rot).xy;
 
     float theta = fract(
         linear_step(-pi, pi, atan(q.y, q.x)) + 0.015 * frameTimeCounter
@@ -346,14 +376,30 @@ vec3 draw_sky(vec3 ray_dir) {
     float up_gradient
         = linear_step(0.0, 0.4, ray_dir.y) + linear_step(0.1, 0.8, -ray_dir.y);
     vec3 sky = ambient_color * mix(0.1, 0.04, up_gradient);
-    float mie_phase = cornette_shanks_phase(dot(ray_dir, sun_dir), 0.6);
-    sky += 0.1 * (ambient_color + 0.5 * end_sun_color) * mie_phase;
+    vec3 end_flash_direction = get_end_flash_direction();
+    float end_flash_fade = get_end_flash_fade();
+    float mie_phase = cornette_shanks_phase(
+        dot(ray_dir, end_flash_direction),
+        0.6
+    );
+    sky += 0.1 * (ambient_color + 0.5 * end_sun_color)
+        * mie_phase * end_flash_fade;
 
 #if defined PROGRAM_DEFERRED4
     // Sun
 
 #ifdef END_SUN_EFFECT
-    sky += draw_sun(ray_dir);
+    /*
+    if (end_flash_fade > eps) {
+        sky += (1.0 - end_flash_fade) * draw_sun(ray_dir, sun_dir)
+            + end_flash_fade * draw_sun(ray_dir, end_flash_direction);
+    } else {
+        sky += draw_sun(ray_dir, sun_dir);
+    }
+    */
+    if (end_flash_fade > eps) {
+        sky += end_flash_fade * draw_sun(ray_dir, end_flash_direction);
+    }
 #endif
 
     // Stars
