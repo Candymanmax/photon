@@ -137,6 +137,9 @@ option.SSS_INTENSITY.comment           = Adjusts the brightness of subsurface sc
 option.SHADING_STRENGTH                = Shading Strength
 option.SHADING_STRENGTH.comment        = Adjusts the contrast of direct light shading. Reducing this option makes faces facing away from the sun that aren't in shadow brighter; increasing it makes them darker
 
+option.END_FLASH_SHADOWS               = End Flash Shadows
+option.END_FLASH_SHADOWS.comment       = Allows End flashes to cast shadows from their flash position
+
 option.SHADOW                          = Shadow Mapping
 option.SHADOW_PCF                      = Shadow Map Filtering
 option.SHADOW_SSRT                     = SSRT Distant Shadows

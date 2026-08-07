@@ -361,6 +361,7 @@ vec3 draw_sky(vec3 ray_dir) {
     float up_gradient
         = linear_step(0.0, 0.4, ray_dir.y) + linear_step(0.1, 0.8, -ray_dir.y);
     vec3 sky = ambient_color * mix(0.1, 0.04, up_gradient);
+
     vec3 end_flash_direction = get_end_flash_direction();
     float end_flash_fade = get_end_flash_fade();
     float mie_phase = cornette_shanks_phase(
@@ -374,14 +375,6 @@ vec3 draw_sky(vec3 ray_dir) {
     // Sun
 
 #ifdef END_SUN_EFFECT
-    /*
-    if (end_flash_fade > eps) {
-        sky += (1.0 - end_flash_fade) * draw_sun(ray_dir, sun_dir)
-            + end_flash_fade * draw_sun(ray_dir, end_flash_direction);
-    } else {
-        sky += draw_sun(ray_dir, sun_dir);
-    }
-    */
     if (end_flash_fade > eps) {
         sky += end_flash_fade * draw_sun(ray_dir, end_flash_direction);
     }

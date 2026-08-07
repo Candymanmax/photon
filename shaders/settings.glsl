@@ -137,6 +137,7 @@ const float wetnessHalflife         = 14.0;
 
   #define SHADOW_DEPTH_SCALE 0.2
   #define SHADOW_DISTORTION 0.85
+  #define END_FLASH_SHADOWS
 
 // Ambient Occlusion
 

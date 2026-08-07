@@ -17,8 +17,12 @@ float get_end_flash_fade() {
 }
 
 float get_end_flash_shadow_fade() {
+#ifdef END_FLASH_SHADOWS
 #if defined WORLD_END && defined IS_IRIS
-    return get_end_flash_fade();
+    return smoothstep(0.05, 0.28, endFlashIntensity);
+#else
+    return 1.0;
+#endif
 #else
     return 1.0;
 #endif
