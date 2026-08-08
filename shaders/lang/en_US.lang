@@ -69,6 +69,7 @@ screen.water_fog_coeff                 = Water Fog Coefficients
 
 screen.end_light_color                 = Light Color
 screen.end_ambient_color               = Ambient Color
+screen.end_sun_color                   = End Sun Color
 screen.nether_color                    = Static Color
 
 screen.distance_view                   = Distance View
@@ -206,6 +207,9 @@ option.NETHER_S                        = Ambient Saturation
 option.NETHER_R                        = §c▍ §fRed
 option.NETHER_G                        = §a▍ §fGreen
 option.NETHER_B                        = §9▍ §fBlue
+option.END_SUN_R                       = §c▍ §fRed
+option.END_SUN_G                       = §a▍ §fGreen
+option.END_SUN_B                       = §9▍ §fBlue
 option.END_LIGHT_R                     = §c▍ §fRed
 option.END_LIGHT_G                     = §a▍ §fGreen
 option.END_LIGHT_B                     = §9▍ §fBlue

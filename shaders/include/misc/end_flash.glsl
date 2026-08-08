@@ -9,7 +9,8 @@ uniform float endFlashIntensity;
 float get_end_flash_fade() {
 #if defined WORLD_END && defined IS_IRIS
     if (length(endFlashPosition) > eps) {
-        return smoothstep(0.1, 0.35, endFlashIntensity);
+        float fade = smoothstep(0.1, 0.35, endFlashIntensity);
+        return isnan(fade) || isinf(fade) ? 0.0 : fade;
     }
 #endif
 
@@ -19,7 +20,8 @@ float get_end_flash_fade() {
 float get_end_flash_shadow_fade() {
 #ifdef END_FLASH_SHADOWS
 #if defined WORLD_END && defined IS_IRIS
-    return smoothstep(0.05, 0.28, endFlashIntensity);
+    float fade = smoothstep(0.05, 0.28, endFlashIntensity);
+    return isnan(fade) || isinf(fade) ? 0.0 : fade;
 #else
     return 1.0;
 #endif

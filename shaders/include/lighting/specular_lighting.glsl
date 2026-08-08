@@ -12,6 +12,10 @@
 #include "/include/utility/sampling.glsl"
 #include "/include/utility/space_conversion.glsl"
 
+#if defined WORLD_END
+#include "/include/sky/end_sun.glsl"
+#endif
+
 #if defined WORLD_OVERWORLD
 #include "/include/fog/overworld/analytic.glsl"
 #endif
@@ -82,6 +86,10 @@ vec3 get_specular_highlight(
     const float specular_max_value
         = 4.0; // Maximum value imposed on specular highlight to prevent it from
                // overloading bloom
+
+#if defined WORLD_END
+    return vec3(0.0);
+#endif
 
 #if defined WORLD_OVERWORLD
     const float sun_angular_radius = SUN_ANGULAR_RADIUS * degree;
@@ -193,7 +201,15 @@ vec3 get_sky_reflection(vec3 ray_dir, float skylight, vec3 hit_pos) {
     return bicubic_filter(colortex4, project_sky(ray_dir)).rgb
         * skylight_falloff;
 #else
-    return texture(colortex4, project_sky(ray_dir)).rgb;
+    vec3 reflection = texture(colortex4, project_sky(ray_dir)).rgb;
+#if defined WORLD_END
+    float end_flash_fade = get_end_flash_fade();
+    if (end_flash_fade > eps) {
+        reflection += end_flash_fade
+            * draw_end_sun_radiance(ray_dir, get_end_flash_direction());
+    }
+#endif
+    return reflection;
 #endif
 }
 
