@@ -84,13 +84,10 @@ float clouds_powder_effect(float density, float cos_theta) {
     return powder;
 }
 
-vec3 clouds_aerial_perspective(
+vec3 clouds_iridescence(
     vec3 clouds_scattering,
     float clouds_transmittance,
-    vec3 ray_origin,
-    vec3 ray_end,
-    vec3 ray_dir,
-    vec3 clear_sky
+    vec3 ray_dir
 ) {
 #ifdef CLOUDS_IRIDESCENCE
     float sun_alignment = dot(ray_dir, sun_dir);
@@ -135,6 +132,17 @@ vec3 clouds_aerial_perspective(
     );
 #endif
 
+    return clouds_scattering;
+}
+
+vec3 clouds_aerial_perspective(
+    vec3 clouds_scattering,
+    float clouds_transmittance,
+    vec3 ray_origin,
+    vec3 ray_end,
+    vec3 ray_dir,
+    vec3 clear_sky
+) {
     vec3 air_transmittance;
 
 #if CLOUDS_AERIAL_PERSPECTIVE_BOOST != 0

@@ -373,6 +373,11 @@ CloudsResult draw_altocumulus_clouds(
 
     vec3 clouds_scattering
         = scattering.x * light_color + scattering.y * sky_color;
+    clouds_scattering = clouds_iridescence(
+        clouds_scattering,
+        clouds_transmittance,
+        ray_dir
+    );
     clouds_scattering = clouds_aerial_perspective(
         clouds_scattering,
         clouds_transmittance,

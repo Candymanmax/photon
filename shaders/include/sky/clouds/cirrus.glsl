@@ -297,6 +297,11 @@ CloudsResult draw_cirrus_clouds(
     // Remap the transmittance so that min_transmittance is 0
     vec3 clouds_scattering
         = scattering.x * light_color + scattering.y * sky_color * 1.41;
+    clouds_scattering = clouds_iridescence(
+        clouds_scattering,
+        view_transmittance,
+        ray_dir
+    );
     clouds_scattering = clouds_aerial_perspective(
         clouds_scattering,
         view_transmittance,
